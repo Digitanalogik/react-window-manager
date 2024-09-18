@@ -1,10 +1,10 @@
 export const GAP = 10;
 
-export const DEFAULT_X = 100;
-export const DEFAULT_Y = 100;
+export const DEFAULT_X = 0;
+export const DEFAULT_Y = 10;
 
 export const DEFAULT_DIALOG_WIDTH = 400;
-export const DEFAULT_DIALOG_HEIGHT = 250;
+export const DEFAULT_DIALOG_HEIGHT = 200;
 
 export const MIN_DIALOG_WIDTH = 200;
 export const MIN_DIALOG_HEIGHT = 100;

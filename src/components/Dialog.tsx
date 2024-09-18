@@ -49,8 +49,12 @@ const Dialog: React.FC<DialogProps> = ({
     onResize(id, { width: data.size.width, height: data.size.height });
   };
 
+  const handleDrag = (e: DraggableEvent, data: DraggableData) => {
+    setCurrentPosition({ x: data.x, y: data.y });
+  };
+
   const handleDragStop = (e: DraggableEvent, data: DraggableData) => {
-    setCurrentPosition({ x: data.x, y: data.y }); // Update position state
+    setCurrentPosition({ x: data.x, y: data.y });
   };
 
   if (!visible) return null;
@@ -65,8 +69,9 @@ const Dialog: React.FC<DialogProps> = ({
   return (
     <Draggable
       disabled={!isDraggable}
-      defaultPosition={position}
+      position={currentPosition}
       handle=".dialog-header"
+      onDrag={handleDrag}
       onStop={handleDragStop}
     >
       <ResizableBox
