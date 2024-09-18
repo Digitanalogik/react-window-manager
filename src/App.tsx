@@ -1,13 +1,17 @@
-import React from 'react';
-import './App.css';
-import DialogManager from './components/DialogManager';
+import React from "react";
+import { DialogProvider } from "./context/DialogContext";
+import DialogManager from "./components/DialogManager";
+import "./App.css";
 
-function App(): JSX.Element {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <DialogManager />
-    </div>
+    <DialogProvider>
+      <div id="app">
+        <h1>WinMan - Window Manager</h1>
+        <DialogManager />
+      </div>
+    </DialogProvider>
   );
-}
+};
 
 export default App;
