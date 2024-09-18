@@ -1,5 +1,11 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
-import { DEFAULT_X, DEFAULT_Y, GAP } from "../utils/Constants";
+import {
+  DEFAULT_DIALOG_HEIGHT,
+  DEFAULT_DIALOG_WIDTH,
+  DEFAULT_X,
+  DEFAULT_Y,
+  GAP,
+} from "../utils/Constants";
 
 interface DialogData {
   id: number;
@@ -34,6 +40,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
 
   const addDialog = (title: string, component: JSX.Element) => {
     const lastDialog = dialogs[dialogs.length - 1];
+    console.log("lastDialog", lastDialog);
     const defaultPosition = lastDialog
       ? {
           x: lastDialog.position.x,
@@ -47,7 +54,7 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({
       title,
       component,
       visible: true,
-      size: { width: 300, height: 200 },
+      size: { width: DEFAULT_DIALOG_WIDTH, height: DEFAULT_DIALOG_HEIGHT },
     };
 
     setDialogs([...dialogs, newDialog]);

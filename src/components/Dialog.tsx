@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Draggable from "react-draggable";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 import DialogDebugInfo from "./DialogDebugInfo";
 import {
@@ -40,12 +40,17 @@ const Dialog: React.FC<DialogProps> = ({
     width: DEFAULT_DIALOG_WIDTH,
     height: DEFAULT_DIALOG_HEIGHT,
   });
+  const [currentPosition, setCurrentPosition] = useState(position);
   const [isDraggable, setIsDraggable] = useState(false); // To toggle dragging
   const [isResizable, setIsResizable] = useState(true); // To toggle resizing
 
   const handleResize = (e: React.SyntheticEvent, data: ResizeCallbackData) => {
     setSize({ width: data.size.width, height: data.size.height });
     onResize(id, { width: data.size.width, height: data.size.height });
+  };
+
+  const handleDragStop = (e: DraggableEvent, data: DraggableData) => {
+    setCurrentPosition({ x: data.x, y: data.y }); // Update position state
   };
 
   if (!visible) return null;
@@ -62,6 +67,7 @@ const Dialog: React.FC<DialogProps> = ({
       disabled={!isDraggable}
       defaultPosition={position}
       handle=".dialog-header"
+      onStop={handleDragStop}
     >
       <ResizableBox
         width={size.width}
@@ -99,7 +105,7 @@ const Dialog: React.FC<DialogProps> = ({
             style={{ width: "100%", height: "100%" }}
           >
             {component}
-            <DialogDebugInfo position={position} size={size} />
+            <DialogDebugInfo position={currentPosition} size={size} />
           </div>
         </div>
       </ResizableBox>
