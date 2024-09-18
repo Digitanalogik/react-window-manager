@@ -1,46 +1,62 @@
-# Getting Started with Create React App
+# WinMan - Window Manager for React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![WinMan](./WinMan.jpg)
 
-## Available Scripts
+## Introduction
 
-In the project directory, you can run:
+`DialogManager` and `Dialog` are components designed to manage and display dialogs in a React application. These components provide a flexible and customizable way to handle dialog windows, making it easy to create, move, and resize dialogs within your application.
 
-### `yarn start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **DialogManager**: Manages multiple dialogs, ensuring they are displayed correctly and can be interacted with independently.
+- **Dialog**: A customizable dialog component that can be moved and resized.
+- **Draggable and Resizable**: Utilizes `react-draggable` and `react-resizable` to provide drag-and-drop and resize functionality.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## External Libraries
 
-### `yarn test`
+### react-draggable
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+`react-draggable` is used to make the dialogs draggable. This allows users to click and drag the dialogs to reposition them within the application window.
 
-### `yarn build`
+### react-resizable
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+`react-resizable` is used to make the dialogs resizable. This allows users to click and drag the edges or corners of the dialogs to resize them as needed.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To install the project, follow these steps:
 
-### `yarn eject`
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/your-repo/dialog-manager.git
+    cd dialog-manager
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. Install the dependencies:
+    ```sh
+    yarn install
+    ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Usage
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Here's an example of how to use `DialogManager` and `Dialog` in your React application:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```jsx
+import React from 'react';
+import DialogManager from './components/DialogManager';
+import Dialog from './components/Dialog';
 
-## Learn More
+function App() {
+  return (
+    <div className="App">
+      <DialogManager>
+        <Dialog title="Sample Dialog" initialPosition={{ x: 100, y: 100 }} initialSize={{ width: 300, height: 200 }}>
+          <p>This is a sample dialog content.</p>
+        </Dialog>
+      </DialogManager>
+    </div>
+  );
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+export default App;
+```
