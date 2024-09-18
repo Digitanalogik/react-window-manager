@@ -12,5 +12,6 @@ export const MIN_DIALOG_HEIGHT = 100;
 export const MAX_DIALOG_WIDTH = 800;
 export const MAX_DIALOG_HEIGHT = 600;
 
+export const RESIZE_GRID_SIZE = 25;
 export const RESIZE_HANDLE_SIZE = 20;
 export const DIALOG_HEADER_HEIGHT = 30;

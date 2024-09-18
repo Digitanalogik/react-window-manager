@@ -1,0 +1,8 @@
+.dialog-debug-info {
+  font-family: monospace;
+  font-size: medium;
+  margin: 2em;
+  padding: 2em;
+  border: solid 1px #ccc;
+  background-color: #ab5584;
+}

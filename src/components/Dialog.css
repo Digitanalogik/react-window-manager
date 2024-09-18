@@ -76,12 +76,15 @@
 }
 
 .dialog {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  transition: border-color 0.3s ease;
 }
 
 .dialog-header {
@@ -98,12 +101,30 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
+  padding: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.dialog-actions button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .dialog-content {
   flex-grow: 1;
   padding: 10px;
   overflow: auto;
+}
+
+/* Highlight when move mode is active */
+.dialog-move-mode {
+  border: 2px solid #00aaff; /* Blue border for move mode */
+  box-shadow: 0 0 15px rgba(0, 170, 255, 0.4);
+}
+
+/* Highlight when resize mode is active */
+.dialog-resize-mode {
+  border: 2px solid #ffaa00; /* Orange border for resize mode */
+  box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
 }
 
 .resize-handle {
@@ -114,4 +135,15 @@
   bottom: 0;
   right: 0;
   cursor: se-resize;
+}
+
+/* Highlight active buttons */
+.dialog-actions button.active {
+  background-color: #00aaff;
+  color: white;
+  font-weight: bold;
+}
+
+.dialog-actions button.active:hover {
+  background-color: #0088cc;
 }
