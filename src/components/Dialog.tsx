@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import Draggable from "react-draggable";
+import { ResizableBox, ResizeCallbackData } from "react-resizable";
 import "./Dialog.css";
 
 interface DialogProps {
@@ -19,28 +20,34 @@ const Dialog: React.FC<DialogProps> = ({
   onClose,
   onResize,
 }) => {
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [size, setSize] = useState({ width: 300, height: 200 });
 
-  useEffect(() => {
-    // Get the size of the dialog after it renders
-    if (dialogRef.current) {
-      const rect = dialogRef.current.getBoundingClientRect();
-      setSize({ width: rect.width, height: rect.height });
-      onResize(id, { width: rect.width, height: rect.height });
-    }
-  }, [id, onResize]);
+  const handleResize = (e: React.SyntheticEvent, data: ResizeCallbackData) => {
+    setSize({ width: data.size.width, height: data.size.height });
+    onResize(id, { width: data.size.width, height: data.size.height });
+  };
 
   if (!visible) return null;
 
   return (
-    <Draggable defaultPosition={position}>
-      <div ref={dialogRef} className="dialog">
-        <div className="dialog-header">
-          <button onClick={() => onClose(id)}>Close</button>
+    <Draggable defaultPosition={position} handle=".dialog-header">
+      <ResizableBox
+        width={size.width}
+        height={size.height}
+        minConstraints={[200, 100]}  // Minimum width and height
+        maxConstraints={[800, 600]}  // Maximum width and height
+        onResize={handleResize}
+        resizeHandles={['se']}
+      >
+        <div className="dialog" style={{ width: '100%', height: '100%' }}>
+          <div className="dialog-header">
+            <button onClick={() => onClose(id)}>Close</button>
+          </div>
+          <div className="dialog-content" style={{ width: '100%', height: '100%' }}>
+            {component}
+          </div>
         </div>
-        <div className="dialog-content">{component}</div>
-      </div>
+      </ResizableBox>
     </Draggable>
   );
 };
