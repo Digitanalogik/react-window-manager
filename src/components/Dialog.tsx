@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import "./Dialog.css";
 
@@ -8,14 +8,34 @@ interface DialogProps {
   component: JSX.Element;
   visible: boolean;
   onClose: (id: number) => void;
+  onResize: (id: number, size: { width: number; height: number }) => void;
 }
 
-const Dialog: FC<DialogProps> = ({ id, position, component, visible, onClose }) => {
+const Dialog: React.FC<DialogProps> = ({
+  id,
+  position,
+  component,
+  visible,
+  onClose,
+  onResize,
+}) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    // Get the size of the dialog after it renders
+    if (dialogRef.current) {
+      const rect = dialogRef.current.getBoundingClientRect();
+      setSize({ width: rect.width, height: rect.height });
+      onResize(id, { width: rect.width, height: rect.height });
+    }
+  }, [id, onResize]);
+
   if (!visible) return null;
 
   return (
     <Draggable defaultPosition={position}>
-      <div className="dialog">
+      <div ref={dialogRef} className="dialog">
         <div className="dialog-header">
           <button onClick={() => onClose(id)}>Close</button>
         </div>

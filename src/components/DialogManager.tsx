@@ -6,18 +6,32 @@ interface DialogData {
   position: { x: number; y: number };
   component: JSX.Element;
   visible: boolean;
+  size: { width: number; height: number };
 }
+
+const GAP = 10;
 
 const DialogManager: React.FC = () => {
   const [dialogs, setDialogs] = useState<DialogData[]>([]);
 
   const addDialog = () => {
+    // Calculate position based on existing dialogs
+    const lastDialog = dialogs[dialogs.length - 1];
+    const defaultPosition = lastDialog
+      ? {
+          x: lastDialog.position.x,
+          y: lastDialog.position.y + lastDialog.size.height + GAP, 
+        }
+      : { x: 100, y: 100 }; // Default position for the first dialog
+
     const newDialog: DialogData = {
       id: Date.now(),
-      position: { x: 100, y: 100 },  // Initial position
-      component: <div>New Dialog Content</div>,  // Component to render inside the dialog
+      position: defaultPosition, // Dynamically calculate position
+      component: <div>New Dialog Content</div>,
       visible: true,
+      size: { width: 300, height: 200 }, // Default size, will be updated later
     };
+
     setDialogs([...dialogs, newDialog]);
   };
 
@@ -25,6 +39,14 @@ const DialogManager: React.FC = () => {
     setDialogs((prevDialogs) =>
       prevDialogs.map((dialog) =>
         dialog.id === id ? { ...dialog, visible: false } : dialog
+      )
+    );
+  };
+
+  const updateDialogSize = (id: number, size: { width: number; height: number }) => {
+    setDialogs((prevDialogs) =>
+      prevDialogs.map((dialog) =>
+        dialog.id === id ? { ...dialog, size } : dialog
       )
     );
   };
@@ -40,6 +62,7 @@ const DialogManager: React.FC = () => {
           component={dialog.component}
           visible={dialog.visible}
           onClose={closeDialog}
+          onResize={updateDialogSize}
         />
       ))}
     </div>
