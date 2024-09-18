@@ -91,6 +91,7 @@
   background-color: #f1f1f1;
   padding: 10px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   cursor: move; /* Indicate that the header is draggable */
 }
@@ -100,13 +101,16 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 14px;
   padding: 5px;
   transition: background-color 0.2s ease;
 }
 
 .dialog-actions button:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  font-size: 24px;
 }
 
 .dialog-content {

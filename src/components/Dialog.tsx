@@ -89,7 +89,9 @@ const Dialog: React.FC<DialogProps> = ({
                   alt="Toggle Resize"
                 />
               </button>
-              <button onClick={() => onClose(id)}>❌ Close</button>
+              <button className="close-button" onClick={() => onClose(id)}>
+                ❌
+              </button>
             </div>
           </div>
           <div
