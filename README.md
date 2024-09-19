@@ -10,9 +10,6 @@
    - [Dialog](#dialog)
    - [DialogManager](#dialogmanager)
    - [DialogContext](#dialogcontext)
-4. [Customization](#customization)
-5. [Contributing](#contributing)
-6. [License](#license)
 
 ## Introduction
 
@@ -44,26 +41,51 @@ It includes components for creating, managing, and displaying dialogs.
 The `Dialog` component is used to create individual dialog windows.
 It supports dragging and resizing.
 
-**Example**
+1. **Create the Component to be Injected:** First, create the React component that you want to inject into the `Dialog` component. For example, let's create a simple `ContentComponent`.
 
 ```typescript
+// ContentComponent.tsx
 import React from "react";
-import { Dialog } from "./components/Dialog";
 
-const MyComponent = () => (
-  <Dialog
-    id={1}
-    title="My Dialog"
-    position={{ x: 100, y: 100 }}
-    visible={true}
-    onClose={() => console.log("Dialog closed")}
-    onResize={(id, size) => console.log("Dialog resized", id, size)}
-  >
-    <p>Dialog content goes here.</p>
-  </Dialog>
+const ContentComponent = () => (
+  <div>
+    <h2>Dialog Content</h2>
+    <p>This is the content of the dialog.</p>
+  </div>
 );
 
-export default MyComponent;
+export default ContentComponent;
+```
+
+2. **Import the Component and Dialog:** Import the `ContentComponent` and the `Dialog` component into the file where you want to use them.
+
+```typescript
+// App.tsx or any other file
+import React from "react";
+import Dialog from "./components/Dialog";
+import ContentComponent from "./components/ContentComponent";
+```
+
+3. **Inject the Component into the Dialog:** Pass the `ContentComponent` as a prop to the `Dialog` component. You can use the `component` prop to inject the component.
+
+```typescript
+const App = () => {
+  return (
+    <div>
+      <Dialog
+        id={1}
+        title="My Dialog"
+        position={{ x: 100, y: 100 }}
+        visible={true}
+        onClose={() => console.log("Dialog closed")}
+        onResize={(id, size) => console.log("Dialog resized", id, size)}
+        component={<ContentComponent />} // Injecting the component
+      />
+    </div>
+  );
+};
+
+export default App;
 ```
 
 ### DialogManager
@@ -77,67 +99,152 @@ It uses the `DialogContext` to keep track of the dialogs' state.
 import React from "react";
 import { DialogManager } from "./components/DialogManager";
 
-const App = () => (
-  <DialogManager>{/* Your application components */}</DialogManager>
-);
+const App = () => {
+  return (
+    <DialogProvider>
+      <div id="app">
+        <h1>WinMan - Window Manager</h1>
+        <DialogManager />
+        {/* Your application components */}
+      </div>
+    </DialogProvider>
+  );
+};
 
 export default App;
 ```
 
 ### DialogContext
 
-The `DialogContext` provides a context for managing dialogs.
-It includes methods for adding, removing, and updating dialogs.
+The `DialogContext` in this code provides a context for managing dialogs within a React application. It includes interfaces and functions that help in creating, managing, and interacting with dialog components. Here’s a detailed explanation:
 
-**Example**
+#### Interfaces
+
+1. `DialogData`: This interface defines the structure of a dialog object. It includes:
+
+- `id`: A unique identifier for the dialog.
+- `title`: The title of the dialog.
+- `position`: An object containing the x and y coordinates of the dialog.
+- `size`: An object containing the width and height of the dialog.
+- `visible`: A boolean indicating whether the dialog is visible.
+- `component`: The React component to be rendered inside the dialog.
 
 ```typescript
-import React, { useContext } from "react";
-import { DialogContext } from "./context/DialogContext";
+interface DialogData {
+  id: number;
+  title: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  visible: boolean;
+  component: JSX.Element;
+}
+```
 
-const MyComponent = () => {
-  const { addDialog, closeDialog } = useContext(DialogContext);
+2. `DialogContextType`: This interface defines the structure of the context value. It includes:
 
-  const openDialog = () => {
-    addDialog("New Dialog", <p>New dialog content</p>);
+- `dialogs`: An array of `DialogData` objects representing the current dialogs.
+- `addDialog`: A function to add a new dialog. It takes a title and a component as arguments.
+- `closeDialog`: A function to close a dialog. It takes the id of the dialog to be closed.
+- `resizeDialog`: A function to resize a dialog. It takes the id of the dialog and a size object containing the new width and height.
+
+```typescript
+interface DialogContextType {
+  dialogs: DialogData[];
+  addDialog: (title: string, component: JSX.Element) => void;
+  closeDialog: (id: number) => void;
+  resizeDialog: (id: number, size: { width: number; height: number }) => void;
+}
+```
+
+#### Context and Hook
+
+1. `DialogContext`: This is the context object created using `createContext`. It holds the value of type `DialogContextType` or `undefined`.
+
+```typescript
+const DialogContext = createContext<DialogContextType | undefined>(undefined);
+```
+
+2. `useDialogContext`: This is a custom hook that provides access to the `DialogContext`. It ensures that the hook is used within a `DialogProvider`.
+
+```typescript
+export const useDialogContext = (): DialogContextType => {
+  const context = useContext(DialogContext);
+  if (!context) {
+    throw new Error("useDialogContext must be used within a DialogProvider");
+  }
+  return context;
+};
+```
+
+#### Provider Component
+
+1. `DialogProvider`: This is a React functional component that provides the `DialogContext` to its children. It manages the state of the dialogs and provides functions to add, close, and resize dialogs.
+
+```typescript
+export const DialogProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [dialogs, setDialogs] = useState<DialogData[]>([]);
+
+  const addDialog = (title: string, component: JSX.Element) => {
+    const lastDialog = dialogs[dialogs.length - 1];
+    const defaultPosition = lastDialog
+      ? {
+          x: lastDialog.position.x,
+          y: lastDialog.position.y + lastDialog.size.height + GAP,
+        }
+      : { x: DEFAULT_X, y: DEFAULT_Y };
+
+    const newDialog: DialogData = {
+      id: Date.now(),
+      position: defaultPosition,
+      title,
+      component,
+      visible: true,
+      size: { width: DEFAULT_DIALOG_WIDTH, height: DEFAULT_DIALOG_HEIGHT },
+    };
+
+    setDialogs([...dialogs, newDialog]);
+  };
+
+  const closeDialog = (id: number) => {
+    setDialogs((prevDialogs) =>
+      prevDialogs.map((dialog) =>
+        dialog.id === id ? { ...dialog, visible: false } : dialog
+      )
+    );
+  };
+
+  const resizeDialog = (
+    id: number,
+    size: { width: number; height: number }
+  ) => {
+    setDialogs((prevDialogs) =>
+      prevDialogs.map((dialog) =>
+        dialog.id === id ? { ...dialog, size } : dialog
+      )
+    );
   };
 
   return (
-    <div>
-      <button onClick={openDialog}>Open Dialog</button>
-    </div>
+    <DialogContext.Provider
+      value={{ dialogs, addDialog, closeDialog, resizeDialog }}
+    >
+      {children}
+    </DialogContext.Provider>
   );
 };
-
-export default MyComponent;
 ```
 
-## Customization
+#### Summary
 
-You can customize the dialogs by passing different props to the `Dialog` component.
-Here are the customizable props:
+- `DialogData`: Defines the structure of a dialog object.
+- `DialogContextType`: Defines the structure of the context value, including functions to manage dialogs.
+- `DialogContext`: The context object that holds the dialog state and functions.
+- `useDialogContext`: A custom hook to access the DialogContext.
+- `DialogProvider`: A provider component that manages the state of dialogs and provides context to its children.
 
-- `title`: The title of the dialog.
-- `position`: The initial position of the dialog.
-- `visible`: Whether the dialog is visible.
-- `component`: React component shown inside the dialog.
-- `onClose`: A callback function that is called when the dialog is closed.
-- `onResize`: A callback function that is called when the dialog is resized.
-
-**Example**
-
-```typescript
-<Dialog
-  id={2}
-  title="Custom Dialog"
-  position={{ x: 200, y: 200 }}
-  visible={true}
-  onClose={() => console.log("Custom dialog closed")}
-  onResize={(id, size) => console.log("Custom dialog resized", id, size)}
->
-  <p>Custom dialog content goes here.</p>
-</Dialog>
-```
+By using these interfaces and functions, developers can easily manage dialogs within their React applications, ensuring a consistent and flexible dialog system.
 
 ## External Libraries
 
